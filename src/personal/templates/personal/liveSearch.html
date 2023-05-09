@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+  integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+  crossorigin="anonymous">
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+  
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+    
+  <!-- Custom styles for this template -->
+  <link href="/static/css/{{color}}.css" rel="stylesheet">
+
+  <title>sup_helper | Support Helper Tool</title>
+
+  <style>
+      .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+
+      @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+      }
+    </style>
+  
+</head>
+
+<body class="d-flex flex-column h-100">
+
+<div class="container-fluid bg-dark">
+  <div class="row">
+    <div class="col-sm-10 col-md-10 col-lg-10 d-flex justify-content-start align-items-center">
+      <nav class="nav nav-masthead mx-2">
+        <a class="nav-link" href="{% url 'L2' %}">L2</a>
+        <a class="nav-link" href="{% url 'openHistoryExtended' %}">openHistoryExtended</a>
+        <a class="nav-link active" href="{% url 'liveSearch' %}">liveSearch</a>
+        <a class="nav-link" href="{% url 'boAccGenerator' %}">boAccGenerator</a>
+        <a class="nav-link" href="{% url 'checkArchiveRound' %}">checkArchiveRound</a>
+        <a class="nav-link" href="{% url 'checkArchiveRedshiftRound' %}">checkArchiveRedshiftRound</a>
+        <a class="nav-link" href="{% url 'rtpPages' %}">RTP</a>
+          {% if request.user.is_L1 %}
+        <a class="nav-link" href="{% url 'gameEnbPage' %}">GameEnabling</a>
+          {% endif %}
+        <a class="nav-link" href="{% url 'infoPage' %}">dbInfo</a>
+          {% if request.user.is_L1 %}
+        <a class="nav-link" href="{% url 'rtpCloning' %}">rtpCloning</a>
+          {% endif %}
+    </div>
+
+    <div class="col-sm-2 col-md-2 col-lg-2 col d-flex justify-content-end align-items-center">
+      <!-- <div class="d-flex justify-content-end">some text or icon here</div> -->
+      <h3 class="masthead-brand">
+        <!-- {% if request.user.is_authenticated %} -->
+          <div class="dropdown d-flex align-items-center">
+            <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
+            {{request.user.username}}
+          </button>
+            <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="dropdownMenuButton2">
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault_theme">
+              <label class="form-check-label" for="flexSwitchCheckDefault">Theme switch</label>
+            </div>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+            </ul>
+          </div>
+          {% endif %}
+      </h3>
+
+    </div>
+  </div>
+</div>
+
+</nav>
+
+<!-- js for checkbox switch URL redirects and saving cookies for selected theme -->
+    <script type="text/javascript">
+      document.querySelector('#flexSwitchCheckDefault_theme').addEventListener('change', function(){
+       if(this.checked){
+         setTimeout(function(){window.location.href="/theme?color=dark"},250);
+        }
+        else{
+          setTimeout(function(){window.location.href="/theme?color=light"},250);
+        }  
+      });
+    </script>
+
+    <script>
+      function onClickBox() {
+        let checked=$("#flexSwitchCheckDefault_theme").is(":checked");
+        localStorage.setItem("checked", checked);
+        $("#msg").text("Checkbox is checked: "+$("#flexSwitchCheckDefault_theme").is(":checked") );
+      }
+      function onReady() {
+        $("#msg").text("Loaded.");
+        let checked="true"==localStorage.getItem("checked");
+        $("#flexSwitchCheckDefault_theme").prop('checked', checked);
+        $("#flexSwitchCheckDefault_theme").click(onClickBox);
+      }
+      $(document).ready(onReady);
+    </script>
+
+
+<div class="mx-2 py-4">
+  <details>
+    <summary><b>How it works</b></summary>
+      <p>
+        <p>
+          The provided section is intended to display detailed information about the selected operator or brand. <br>
+          You can search for information using one of the available filters: <br>
+          - <b> Operator/casino </b> - used by default. Allows you to search information by the Operator name or by the Brand name (casino name) <br>
+          - <b> Ids </b> - allows you to search information by Operator ID or by Casino ID <br>
+          - <b> Prod </b> - displays a list of all operators and their casinos that are on the specified prod (server) <br>
+          - <b> securelogin/stylename </b> - allows you to search information by casino securelogin or by casino stylename. <br>
+          - <b> Staging </b> - checkbox, which allows you to search operators and casinos on the Stage. (Disabled by default, all searches are performed on production servers) <br>
+        </p>
+      <p>
+        The table with the results indicates the following information: <br>
+        - <b> prod </b> - displays server name on which the operator and casino are located <br>
+        - <b> customerName </b> - displays Operator Name <br>
+        - <b> customerId </b> - displays Operator ID <br>
+        - <b> casinoName </b> - displays Casino Name (Brand Name) by this operator <br>
+        - <b> casinoId </b> - displays Casino ID by this operator <br>
+        - <b> secureLogin </b> - displays the casino's secureLogin <br>
+        - <b> styleName </b> - displays the casino's stylename <br>
+        - <b> en </b> - displays the status of the casino (1 - enabled, 0 - disabled) <br>
+        - <b> integration </b> - displays a type of integration for the casino <br>
+        - <b> DBR </b> - displays the value of Default Brand RTP for the casino <br>
+        - <b> lob </b> - displays if Mini Lobby is enabled for the casino (1 - enabled, empty field - not enabled) <br>
+        - <b> cm.lob </b> - displays if Common Lobby is enabled for the casino (1 - enabled, empty field - not enabled) 
+      </p>
+        <b>
+          This section displays the list of casinos which are not Deleted and which are not Test Casino. <br>
+          Please note, that information about the list of Operators and Casinos is updating every hour at :00 minutes.
+        </b>
+      </p>
+  </details>
+
+<p>
+  <h3>Brand search page</h3>
+</p>
+  <p class="desc">By prod, cust_name, cas_name, cas_id, secureLogin, styleName</p>
+
+  <div class = "lastExportUpdate" id = "lastExportUpdate"></div>
+  
+  <div class="container-fluid">
+    <div class="row">
+      <div class="d-flex col-3 align-items-center">
+        <input class="form-control form-control-sm" id="ex3" type="text" autocomplete="off" placeholder="query">
+      </div>
+
+      <div class="d-flex col-7 align-items-center">
+        <input class="form-check-input" type="radio" name="filter" id="client_name" value="client_name" checked>
+        <label class="form-check-label mx-2" for="client_name">
+          Operator/casino
+        </label>
+      
+        <input class="form-check-input" type="radio" name="filter" id="client_id" value="client_id">
+        <label class="form-check-label mx-2" for="client_id">
+          Ids
+        </label>
+
+        <input class="form-check-input" type="radio" name="filter" id="prod_filter" value="prod">
+        <label class="form-check-label mx-2" for="prod">
+          Prod
+        </label>
+
+        <input class="form-check-input" type="radio" name="filter" id="securelogin_filter" value="securelogin">
+        <label class="form-check-label mx-2" for="securelogin_filter">
+          securelogin/stylename
+        </label>
+
+        <input class="form-check-input" type="checkbox" value="" id="staging_checkbox">
+        <label class="form-check-label mx-2" for="staging_checkbox">
+          Staging
+        </label>
+      </div>
+
+    </div>
+  </div>
+
+  <hr>
+
+  <div class="returnBlock" id="livesearch"></div>
+
+</div>
+<!-- <script>
+  let input = document.getElementById('input');
+  let timeout = null;
+
+
+  input.addEventListener('keyup', function (e) {
+    clearTimeout(timeout);
+    timeout = setTimeout(function () {
+      showResult(input.value)
+    }, 700);
+
+  });
+
+  let client_name = document.getElementById('client_name');
+  client_name.addEventListener('click', handler, false);
+
+  let client_id = document.getElementById('client_id');
+  client_id.addEventListener('click', handler, false);
+
+  let securelogin_filter = document.getElementById('securelogin_filter');
+  securelogin_filter.addEventListener('click', handler, false);
+
+  let prod_filter = document.getElementById('prod_filter');
+  prod_filter.addEventListener('click', handler, false);
+
+  let staging_checkbox = document.getElementById('staging_checkbox');
+  staging_checkbox.addEventListener('click', handler, false);
+
+  function handler(event) {
+    clearTimeout(timeout);
+    timeout = setTimeout(function () {
+      showResult(input.value)
+    }, 1100);
+  }
+
+
+
+  function showResult(str) {
+    if (str.length == 0) {
+      document.getElementById("livesearch").innerHTML = "";
+      document.getElementById("livesearch").style.border = "0px";
+      return;
+    }
+    var xmlhttp = new XMLHttpRequest();
+    xmlhttp.onreadystatechange = function () {
+      if (this.readyState == 4 && this.status == 200) {
+        document.getElementById("livesearch").innerHTML = this.responseText;
+        document.getElementById("livesearch").style.border = "1px solid #A5ACB2";
+      }
+    }
+    staging_checkbox = document.querySelector('.staging_checkbox').checked;
+    filter_value = document.querySelector('input[name=filter]:checked').value
+    xmlhttp.open("GET", "/search?q=" + str + "&staging=" + staging_checkbox + "&filter=" +filter_value );
+    xmlhttp.send();
+  }
+
+  function getLastExportDate() //GET ROOUND END DETAILS
+  {
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.open("GET", "/lastExportUpdate", true); // false for synchronous request
+    xmlHttp.send();
+    xmlHttp.onreadystatechange = (e) => {
+      //console.log(xmlHttp.responseText);
+      document.querySelector('#lastExportUpdate').innerHTML = xmlHttp.responseText
+    }
+  }
+  getLastExportDate()
+
+  const delay = async (ms = 1000) =>
+  new Promise(resolve => setTimeout(resolve, ms))
+
+async function makeALoopWait() {
+  // const exampleArray = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+  for (let i = 0; i <= 1; i += 1) {
+    // Your code goes after this line!
+    getLastExportDate()
+    console.log(i)
+    // Your code must finish before this line!
+    await delay(30000)
+  }
+}
+
+makeALoopWait()
+
+
+</script> -->
+
+</div>
+
+</body>
+</html>

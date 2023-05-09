@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+  integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+  crossorigin="anonymous">
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+  
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+    
+  <!-- Custom styles for this template -->
+  <link href="/static/css/{{color}}.css" rel="stylesheet">
+
+  <title>sup_helper | Support Helper Tool</title>
+
+  <style>
+      .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+
+      @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+      }
+    </style>
+  
+</head>
+
+<body class="d-flex flex-column h-100">
+
+<div class="container-fluid bg-dark">
+  <div class="row">
+    <div class="col-sm-10 col-md-10 col-lg-10 d-flex justify-content-start align-items-center">
+      <nav class="nav nav-masthead mx-2">
+        <a class="nav-link active" href="{% url 'L2' %}">L2</a>
+        <a class="nav-link" href="{% url 'openHistoryExtended' %}">openHistoryExtended</a>
+        <a class="nav-link" href="{% url 'liveSearch' %}">liveSearch</a>
+        <a class="nav-link" href="{% url 'boAccGenerator' %}">boAccGenerator</a>
+        <a class="nav-link" href="{% url 'checkArchiveRound' %}">checkArchiveRound</a>
+        <a class="nav-link" href="{% url 'checkArchiveRedshiftRound' %}">checkArchiveRedshiftRound</a>
+        <a class="nav-link" href="{% url 'rtpPages' %}">RTP</a>
+          {% if request.user.is_L1 %}
+        <a class="nav-link" href="{% url 'gameEnbPage' %}">GameEnabling</a>
+          {% endif %}
+        <a class="nav-link" href="{% url 'infoPage' %}">dbInfo</a>
+          {% if request.user.is_L1 %}
+        <a class="nav-link" href="{% url 'rtpCloning' %}">rtpCloning</a>
+          {% endif %}
+    </div>
+
+    <div class="col-sm-2 col-md-2 col-lg-2 col d-flex justify-content-end align-items-center">
+      <!-- <div class="d-flex justify-content-end">some text or icon here</div> -->
+      <h3 class="masthead-brand">
+        <!-- {% if request.user.is_authenticated %} -->
+          <div class="dropdown d-flex align-items-center">
+            <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
+            {{request.user.username}}
+          </button>
+            <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="dropdownMenuButton2">
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault_theme">
+              <label class="form-check-label" for="flexSwitchCheckDefault">Theme switch</label>
+            </div>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+            </ul>
+          </div>
+          {% endif %}
+      </h3>
+
+    </div>
+  </div>
+</div>
+
+</nav>
+
+<!-- js for checkbox switch URL redirects and saving cookies for selected theme -->
+    <script type="text/javascript">
+      document.querySelector('#flexSwitchCheckDefault_theme').addEventListener('change', function(){
+       if(this.checked){
+         setTimeout(function(){window.location.href="/theme?color=dark"},250);
+        }
+        else{
+          setTimeout(function(){window.location.href="/theme?color=light"},250);
+        }  
+      });
+    </script>
+
+    <script>
+      function onClickBox() {
+        let checked=$("#flexSwitchCheckDefault_theme").is(":checked");
+        localStorage.setItem("checked", checked);
+        $("#msg").text("Checkbox is checked: "+$("#flexSwitchCheckDefault_theme").is(":checked") );
+      }
+      function onReady() {
+        $("#msg").text("Loaded.");
+        let checked="true"==localStorage.getItem("checked");
+        $("#flexSwitchCheckDefault_theme").prop('checked', checked);
+        $("#flexSwitchCheckDefault_theme").click(onClickBox);
+      }
+      $(document).ready(onReady);
+    </script>
+
+
+<div class="mx-2 py-4">
+  <details>
+    <summary>
+      <b>How it works</b>
+    </summary>
+    <p>
+      <p>
+        Provided section provides an instrument for hash calculation according to request's parameters. <br>
+        Hash calculation can be done in two ways, for which two filters are responsible: <br>
+        - <b> Raw </b> &ensp;- Used by default. <br>
+        &emsp;&emsp;&emsp;&emsp;In this case, you need to specify in the field a list of parameters and their values, each of which will be separated by an ampersand. <br>
+        &emsp;&emsp;&emsp;&emsp;In the field password, you need to specify the value of secretKey for the casino, and then press Calculate. <br>
+        &emsp;&emsp;&emsp;&emsp;It is not necessary to sort the parameters in alphabetical order - the script will sort automatically. <br><br>
+        &emsp;&emsp;&emsp;&emsp;For example: <br>
+        &emsp;&emsp;&emsp;&emsp;secureLogin=secureLogin&playerID=player&gameId=vs20olympgate <br>
+        &emsp;&emsp;&emsp;&emsp;password: testPassword <br><br>
+        &emsp;&emsp;&emsp;&emsp;In the result you will see parameters and their value sorted alphabeticaly, with added secretKey value at the end, and the value of the calculated hash. <br><br>
+        - <b> JSON </b> - In this case, you can insert request for any service method from kibana, and specify the value of secretKey to check if hash value calculated correctly in the request itself. <br><br>
+        &emsp;&emsp;&emsp;&emsp;For example: <br>
+        &emsp;&emsp;&emsp;&emsp;{"providerId":"ext_test1","userId":"497","hash":"4f80b8fb8c23b3e73c412ec13bae6562","token":"hnbnq96kbj47100016816930022_authenticate"} <br><br>
+        &emsp;&emsp;&emsp;&emsp;In the result you will see parameters and their value sorted alphabeticaly, with added secretKey value at the end, and the value of the calculated hash.
+      </p>
+    </p>
+  </details>
+
+<p>
+  <h3>Hasher</h3>
+</p>
+
+<div class="container-fluid">    
+  <div class="row">
+    <div class="col-5 d-flex align-items-center">
+      <!-- <form name = "hash_calculation_form" class = "hash_calculation_form"> -->
+      <textarea class="form-control" rows="3" id="hash_input_field" name="hash_input_field" placeholder="row = basic slots hash calculation. Json - same logic, but you can put logs from kibana"></textarea>
+
+      <input type="hidden" name="csrfmiddlewaretoken" value="gYGCPLrjQbrpfPvUeFzhtRSpIRJo9VPs5yFItCw1nxXxxllR5fmAQcFl4fh4eGfP">
+    </div>
+
+    <div class="col-2 d-flex align-items-center">
+      <input type="text" class="form-control form-control-sm" id="password_field" placeholder="password" name="password_field" autocomplete="off">
+    </div>
+
+    <div class="col-3 d-flex align-items-center">
+      <input class="form-check-input" type="radio" name="request_type" id="client_id" value="client_id" checked>
+      <label class="form-check-label mx-2" for="client_id">
+        Row
+      </label>
+
+      <input class="form-check-input mx-2" type="radio" name="request_type" id="client_id" value="client_id">
+      <label class="form-check-label" for="client_id">
+        Json
+      </label>
+
+      <button type="button submit" class="btn btn-success mx-3">Calculate</button>
+    </div>
+
+    <!-- лейбли цепляються по нейму -->
+  </div>
+</div>
+    <!-- </form> -->
+    <p id="hash_result"></p> <!--  block for showing data -->
+
+  <!-- <script>
+
+(async () => {
+    // document.querySelector('form').addEventListener('keydown', (e) => {
+    //   e.preventDefault()
+    // })
+      const hash_calculation_url = "/hash_calculate_request"
+      // const getProdUrl = "/getProdNames"
+
+ //form submit
+      document.querySelector('form').addEventListener('submit', async (e) => {
+      e.preventDefault()
+      $(".submitBtn").attr("disabled", true);
+      document.querySelector('#hash_result').innerHTML = "Wait"
+      const formData = new FormData(e.target)
+      const formDataObj = {}
+      formData.forEach((v, k) => {
+        if (formDataObj[k]) {
+          formDataObj[k].push(v)
+          return;
+        }
+        Object.assign(formDataObj, {
+          [k]: [v]
+        })
+
+      })
+      const res = await request(hash_calculation_url, 'POST', formDataObj)
+      $(".submitBtn").attr("disabled", false);
+      document.querySelector('#hash_result').innerHTML = res
+    })
+
+
+
+    async function request(url, method = 'GET', body = null) {
+      const opt = {
+        method
+      }
+
+      if (!!body) {
+        console.log(22);
+        Object.assign(opt, {
+          body: JSON.stringify(body),
+          headers: body ? {
+            'content-type': 'application/json',
+            'X-CSRFToken': body.csrfmiddlewaretoken[0]
+          } : {}
+        })
+      }
+
+      const req = await fetch(url, opt)
+      return req.text()
+    }
+  })()
+
+
+  </script> -->
+
+</div>
+
+</body>
+</html>

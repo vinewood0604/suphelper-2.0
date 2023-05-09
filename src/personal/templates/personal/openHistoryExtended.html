@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+  integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+  crossorigin="anonymous">
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+  
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+    
+  <!-- Custom styles for this template -->
+  <link href="/static/css/{{color}}.css" rel="stylesheet">
+
+  <title>sup_helper | Support Helper Tool</title>
+
+  <style>
+      .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+
+      @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+      }
+    </style>
+  
+</head>
+
+<body class="d-flex flex-column h-100">
+
+<div class="container-fluid bg-dark">
+  <div class="row">
+    <div class="col-sm-10 col-md-10 col-lg-10 d-flex justify-content-start align-items-center">
+      <nav class="nav nav-masthead mx-2">
+        <a class="nav-link" href="{% url 'L2' %}">L2</a>
+        <a class="nav-link active" href="{% url 'openHistoryExtended' %}">openHistoryExtended</a>
+        <a class="nav-link" href="{% url 'liveSearch' %}">liveSearch</a>
+        <a class="nav-link" href="{% url 'boAccGenerator' %}">boAccGenerator</a>
+        <a class="nav-link" href="{% url 'checkArchiveRound' %}">checkArchiveRound</a>
+        <a class="nav-link" href="{% url 'checkArchiveRedshiftRound' %}">checkArchiveRedshiftRound</a>
+        <a class="nav-link" href="{% url 'rtpPages' %}">RTP</a>
+          {% if request.user.is_L1 %}
+        <a class="nav-link" href="{% url 'gameEnbPage' %}">GameEnabling</a>
+          {% endif %}
+        <a class="nav-link" href="{% url 'infoPage' %}">dbInfo</a>
+          {% if request.user.is_L1 %}
+        <a class="nav-link" href="{% url 'rtpCloning' %}">rtpCloning</a>
+          {% endif %}
+    </div>
+
+    <div class="col-sm-2 col-md-2 col-lg-2 col d-flex justify-content-end align-items-center">
+      <!-- <div class="d-flex justify-content-end">some text or icon here</div> -->
+      <h3 class="masthead-brand">
+        <!-- {% if request.user.is_authenticated %} -->
+          <div class="dropdown d-flex align-items-center">
+            <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
+            {{request.user.username}}
+          </button>
+            <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="dropdownMenuButton2">
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault_theme">
+              <label class="form-check-label" for="flexSwitchCheckDefault">Theme switch</label>
+            </div>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+            </ul>
+          </div>
+          {% endif %}
+      </h3>
+
+    </div>
+  </div>
+</div>
+
+</nav>
+
+<!-- js for checkbox switch URL redirects and saving cookies for selected theme -->
+    <script type="text/javascript">
+      document.querySelector('#flexSwitchCheckDefault_theme').addEventListener('change', function(){
+       if(this.checked){
+         setTimeout(function(){window.location.href="/theme?color=dark"},250);
+        }
+        else{
+          setTimeout(function(){window.location.href="/theme?color=light"},250);
+        }  
+      });
+    </script>
+
+    <script>
+      function onClickBox() {
+        let checked=$("#flexSwitchCheckDefault_theme").is(":checked");
+        localStorage.setItem("checked", checked);
+        $("#msg").text("Checkbox is checked: "+$("#flexSwitchCheckDefault_theme").is(":checked") );
+      }
+      function onReady() {
+        $("#msg").text("Loaded.");
+        let checked="true"==localStorage.getItem("checked");
+        $("#flexSwitchCheckDefault_theme").prop('checked', checked);
+        $("#flexSwitchCheckDefault_theme").click(onClickBox);
+      }
+      $(document).ready(onReady);
+    </script>
+
+
+<div class="mx-2 py-4">
+
+  <details>
+    <summary>
+      <b>How it works</b>
+    </summary>
+    <p>
+      <p>
+        Provided section displays information about the server to which the specified round is related. <br>
+        Then it displays the round ID and the link to the game history of the round, and the table with detailed information about the round. <br>
+        If the round is not completed, then it displayed the round status (INVALID, Incompleted, Cancelled). <br><br>
+        You can use this tool to search for more than one round simultaneously. <br>
+        In such a case, you need to specify round IDs separated by commas. At the same time, it should not be more than 10 rounds. <br><br>
+        Also, here's available two filters: <br>
+        - <b> Auto detect </b> - used by default - provides auto-detection of the server, on which the round was played. <br>
+        - <b> Manual </b> - provides a list of servers, including Staging, which can be chosen to directly search for a round. <br>
+      </p>
+      <p>
+        The table with the results indicates the following information: <br>
+        - <b> nickname </b> - displays nickname of the player for this round, it's the same as the external player ID <br>
+        - <b> memberId </b> - displays member ID of the player for this round, it's the same as the internal player ID <br>
+        - <b> CasName </b> - displays casino name, where this round was played <br>
+        - <b> casinoId </b> - displays casino ID, where this round was played <br>
+        - <b> roundId </b> - displays round ID obviously <br>
+        - <b> gameId </b> - displays a game symbol of the game, in which the round was played <br>
+        - <b> Int </b> - displays a type of integration for the casino <br>
+        - <b> fin </b> - displays if finalization for the casino is enabled (1 - enabled, empty field - disabled) <br>
+        - <b> fin_d </b> - displays the number of days after which the auto-finalization of the round is turned on <br>
+        - <b> real_bet </b> - displays the value of BET in the round <br>
+        - <b> real_win </b> - displays the value of WIN in the round <br>
+        - <b> real_bal </b> - displays the value of the player's BALANCE after finishing this round <br>
+        - <b> bonus_bet </b> - displays the value of the Bonus BET in the round <br>
+        - <b> bonus_win </b> - displays the value of the Bonus WIN in the round <br>
+        - <b> bonus_bal </b> - displays the value of the player's Bonus BALANCE after finishing this round <br>
+        - <b> invalid </b> - displays if the round status is Invalid (1 - invalid, 0 - not invalid) <br>
+        - <b> cancelled </b> - displays if the round status is Cancelled (1 - canceled, 0 - not cancelled) <br>
+        - <b> endRound </b> - displays if the round is completed (1 - completed, 0 - incompleted) <br>
+        - <b> parentRoundId </b> - displays the Parent Round ID for the round, if it is a Free-spin round <br>
+        - <b> startDate </b> - displays the Start date of the round <br>
+        - <b> completeDate </b> - displays the Complete date of the round <br>
+        - <b> FRB </b> - displays an FRB code for this round, if the round is a Free Bonus Round.
+      </p>
+    </p>
+  </details>
+
+<p>
+  <h3>Check rounds (up to 10). Use comma separator.</h3>
+</p>
+
+<div class="container-fluid">    
+  <div class="row">
+    <div class="d-flex col-4 align-items-center">
+      <!-- <form name = "check_actual_rounds_history" class = "round_check_form"> -->
+      <input type="text" class="form-control form-control-sm" id="password_field" placeholder="1556141475013, 4058266138217, 6417804810601" name="inputRounds" autocomplete="off">
+
+      <input type="hidden" name="csrfmiddlewaretoken" value="czdPSH1NNDuoZWvoAbOueS0UATk44PRq19cVwy6vkZ0whsllrLBNBdNQWhSK9AhN">
+    </div>
+
+    <div class="d-flex col-7 align-items-center">
+      <input class="form-check-input" type="radio" name="round_server_detection_method" id="round_server_auto_detection" value="round_server_auto_detection" checked>
+      <label class="form-check-label mx-2" for="client_id">
+        Auto detect
+      </label>
+
+      <input class="form-check-input" type="radio" name="round_server_detection_method" id="round_server_manual_detection" value="round_server_manual_detection">
+      <label class="form-check-label mx-2" for="client_id">
+        Manual
+      </label>
+      <span class="round_check_prod_wrap" id="round_check_prod"></span>
+
+      <input class="form-check-input" type="checkbox" name="jackpot_win_validation" id="jackpot_win_validation">
+      <label class="form-check-label mx-2" for="jackpot_win_validation">
+        JP win validation
+      </label>
+
+      <button type="button submit" class="btn btn-success">Send</button>
+    </div>
+  </div>
+  <p id="actual_round_result_block"></p> <!--  block for showing data -->
+</div>
+
+<hr>
+
+<details>
+  <summary>
+    <b>How it works</b>
+  </summary>
+  <p>
+    <p>
+      The provided section can be used to search rounds that are invalid or have been canceled. <br>
+      For the correctness of the search, you need to select the server on which you need to find such rounds. <br>
+      Further, it is necessary to specify an INTERNAL PLAYER ID (member ID) and choose the date, for which you want to search the rounds. <br>
+    </p>
+    <p>
+      The table with the results indicates the following information: <br>
+      - <b> nickname </b> - displays nickname of the player for this round, it's the same as the external player ID <br>
+      - <b> memberId </b> - displays member ID of the player for this round, it's the same as the internal player ID <br>
+      - <b> CasName </b> - displays casino name, where this round was played <br>
+      - <b> casinoId </b> - displays casino ID, where this round was played <br>
+      - <b> roundId </b> - displays found the round ID, which can be Invalid or Cancelled <br>
+      - <b> gameId </b> - displays a game symbol of the game, in which the round was played <br>
+      - <b> Int </b> - displays a type of integration for the casino <br>
+      - <b> fin </b> - displays if finalization for the casino is enabled (1 - enabled, empty field - disabled) <br>
+      - <b> real_bet </b> - displays the value of BET in the round <br>
+      - <b> real_win </b> - displays the value of WIN in the round <br>
+      - <b> real_bal </b> - displays the value of the player's BALANCE after finishing this round <br>
+      - <b> bonus_bet </b> - displays the value of the Bonus BET in the round <br>
+      - <b> bonus_win </b> - displays the value of the Bonus WIN in the round <br>
+      - <b> bonus_bal </b> - displays the value of the player's Bonus BALANCE after finishing this round <br>
+      - <b> invalid </b> - displays if the round status is Invalid (1 - invalid, 0 - not invalid) <br>
+      - <b> cancelled </b> - displays if the round status is Cancelled (1 - canceled, 0 - not cancelled) <br>
+      - <b> endRound </b> - displays if the round is completed (1 - completed, 0 - incompleted) <br>
+      - <b> parentRoundId </b> - displays the Parent Round ID for the round, if it is a Free-spin round <br>
+      - <b> startDate </b> - displays the Start date of the round <br>
+      - <b> completeDate </b> - displays the Complete date of the round <br>
+      - <b> FRB </b> - displays an FRB code for this round, if the round is a Free Bonus Round.
+    </p>
+  </p>
+</details>
+
+  <p>
+    <h3>Check internal player unsuccessful rounds.</h3>
+  </p>
+
+  <div class="container-fluid">
+    <form name = "check_user_unsuccessful_rounds">
+      <div class="row">
+        <div class="d-flex col-4 align-items-center">
+          
+            <input type="hidden" name="csrfmiddlewaretoken" value="czdPSH1NNDuoZWvoAbOueS0UATk44PRq19cVwy6vkZ0whsllrLBNBdNQWhSK9AhN">
+
+            <span class="prodWrap" id="prodWrap"></span>
+            <input type="text" class="form-control form-control-sm" id="password_field" placeholder="For invalid and cancelled rounds pragmatic internal playerid." name="inputPlayerId" autocomplete="off">
+        </div>
+
+        <div class="d-flex col-2 align-items-center">
+            <input type="date" class="form-control form-control-sm" name="date">
+
+            <button type="button submit" class="btn btn-success mx-2">Send</button>
+        </div>
+      </div>
+    </form>
+  <p id="player_unsuccessful_rounds_result_block"></p> <!--  block for showing data -->
+  </div>
+
+<aside>
+  <p>connections</p>
+  <p id="roundEnd"></p>
+</aside>
+<script>
+  //console.log(document.querySelector('input[name=inputRounds]').value )
+  // document.querySelector('form[name="check_actual_rounds_history"]').addEventListener('submit', (e) => {
+  //   e.preventDefault()
+  //   //document.querySelector('#res').innerHTML = document.querySelector('input[name=inputRounds]').value //вертає у блок res значення тошго що я передав
+  //   $(".submitBtn").attr("disabled", true);
+  //   const Http = new XMLHttpRequest();
+  //   const url = "/openHistoryExtended"
+  //   const params = document.querySelector('input[name=inputRounds]').value
+  //   Http.open("GET", url + "?" + "rounds=" + params)
+  //   Http.send()
+  //   document.querySelector('#actual_round_result_block').innerHTML = "Wait"
+  //   Http.onreadystatechange = (e) => {
+  //     // console.log(Http.responseText)
+  //     $(".submitBtn").attr("disabled", false);
+  //     document.querySelector('#actual_round_result_block').innerHTML = Http.responseText
+  //   }
+  // })
+
+
+
+  // document.querySelector('form[name="check_user_unsuccessful_rounds"]').addEventListener('submit', (e) => {
+  //   e.preventDefault()
+  //   //document.querySelector('#res').innerHTML = document.querySelector('input[name=inputRounds]').value //вертає у блок res значення тошго що я передав
+  //   $(".submitBtn").attr("disabled", true);
+  //   const Http = new XMLHttpRequest();
+  //   const url = "/getPlayerUnsuccessfulRounds"
+  //   const params = document.querySelector('input[name=inputPlayerId]').value
+  //   Http.open("GET", url + "?" + "rounds=" + params)
+  //   Http.send()
+  //   document.querySelector('#actual_round_result_block').innerHTML = "Wait"
+  //   Http.onreadystatechange = (e) => {
+  //     // console.log(Http.responseText)
+  //     $(".submitBtn").attr("disabled", false);
+  //     document.querySelector('#actual_round_result_block').innerHTML = Http.responseText
+  //   }
+  // })
+
+
+  //  document.querySelector('form[name="check_actual_rounds_history"]').addEventListener('submit', async (e) => {
+  //     e.preventDefault()
+  //     $(".submitBtn").attr("disabled", true);
+  //     document.querySelector('#actual_round_result_block').innerHTML = "Wait"
+  //     const formData = new FormData(e.target)
+  //     const formDataObj = {}
+  //     formData.forEach((v, k) => {
+  //       if (formDataObj[k]) {
+  //         formDataObj[k].push(v)
+  //         return;
+  //       }
+  //       Object.assign(formDataObj, {
+  //         [k]: [v]
+  //       })
+
+  //     })
+  //     const res = await request("/openHistoryExtended", 'POST', formDataObj)
+  //     $(".submitBtn").attr("disabled", false);
+  //     document.querySelector('#actual_round_result_block').innerHTML = res
+  //   })
+
+  // document.querySelector('form[name="check_user_unsuccessful_rounds"]').addEventListener('submit', async (e) => {
+  //     e.preventDefault()
+  //     $(".submitBtn").attr("disabled", true);
+  //     document.querySelector('#player_unsuccessful_rounds_result_block').innerHTML = "Wait"
+  //     const formData = new FormData(e.target)
+  //     const formDataObj = {}
+  //     formData.forEach((v, k) => {
+  //       if (formDataObj[k]) {
+  //         formDataObj[k].push(v)
+  //         return;
+  //       }
+  //       Object.assign(formDataObj, {
+  //         [k]: [v]
+  //       })
+
+  //     })
+  //     const res = await request("/getPlayerUnsuccessfulRounds", 'POST', formDataObj)
+  //     $(".submitBtn").attr("disabled", false);
+  //     document.querySelector('#player_unsuccessful_rounds_result_block').innerHTML = res
+  //   })
+
+
+  // function getRoundsEnd() //GET ROOUND END DETAILS
+  // {
+  //   var xmlHttp = new XMLHttpRequest();
+  //   xmlHttp.open("GET", "/jsonRoundEnd", true); // false for synchronous request
+  //   xmlHttp.send();
+  //   xmlHttp.onreadystatechange = (e) => {
+  //     //console.log(xmlHttp.responseText);
+  //     document.querySelector('#roundEnd').innerHTML = xmlHttp.responseText
+  //   }
+  // }
+  // getRoundsEnd()
+
+
+  // async function request(url, method = 'GET', body = null) {
+  //     const opt = {
+  //       method
+  //     }
+
+  //     if (!!body) {
+  //       console.log(22);
+  //       Object.assign(opt, {
+  //         body: JSON.stringify(body),
+  //         headers: body ? {
+  //           'content-type': 'application/json',
+  //           'X-CSRFToken': body.csrfmiddlewaretoken[0]
+  //         } : {}
+  //       })
+  //     }
+
+  //     const req = await fetch(url, opt)
+  //     return req.text()
+  //   }
+
+
+  // document.getElementById('prodWrap').innerHTML = await request(getProdUrl)
+
+  // (async function() {
+  //   document.getElementById('prodWrap').innerHTML = await request(getProdUrl)
+  //   let prodSelect = document.getElementById('prodSelect')
+  // })();
+
+// (async () => {
+//   const getProdUrl = "/getProdNames"
+//   document.getElementById('prodWrap').innerHTML = await request(getProdUrl)
+//   document.getElementById('round_check_prod_wrap').innerHTML = document.getElementById('prodWrap').innerHTML
+//   let prodSelect = document.getElementById('prodSelect')
+//   $("#prodSelect").prepend("<option value='' selected='selected'></option>");
+
+// })()
+
+
+// const hide_manual_prod = document.getElementById('round_check_prod_wrap');
+// hide_manual_prod.style.display = 'none'
+
+// function handleRadioClick() {
+//   if (document.getElementById('round_server_manual_detection').checked) {
+//     hide_manual_prod.style.display = 'block';
+//   } else {
+//     hide_manual_prod.style.display = 'none';
+//   }
+// }
+
+// const radioButtons = document.querySelectorAll('input[name="round_server_detection_method"]');
+// radioButtons.forEach(radio => {
+//   radio.addEventListener('click', handleRadioClick);
+// });
+
+</script>
+
+</div>
+
+</body>
+</html>

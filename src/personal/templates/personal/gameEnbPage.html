@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+  integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+  crossorigin="anonymous">
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+  
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+    
+  <!-- Custom styles for this template -->
+  <link href="/static/css/{{color}}.css" rel="stylesheet">
+
+  <title>sup_helper | Support Helper Tool</title>
+
+  <style>
+      .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+
+      @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+      }
+    </style>
+  
+</head>
+
+<body class="d-flex flex-column h-100">
+
+<div class="container-fluid bg-dark">
+  <div class="row">
+    <div class="col-sm-10 col-md-10 col-lg-10 d-flex justify-content-start align-items-center">
+      <nav class="nav nav-masthead mx-2">
+        <a class="nav-link" href="{% url 'L2' %}">L2</a>
+        <a class="nav-link" href="{% url 'openHistoryExtended' %}">openHistoryExtended</a>
+        <a class="nav-link" href="{% url 'liveSearch' %}">liveSearch</a>
+        <a class="nav-link" href="{% url 'boAccGenerator' %}">boAccGenerator</a>
+        <a class="nav-link" href="{% url 'checkArchiveRound' %}">checkArchiveRound</a>
+        <a class="nav-link" href="{% url 'checkArchiveRedshiftRound' %}">checkArchiveRedshiftRound</a>
+        <a class="nav-link" href="{% url 'rtpPages' %}">RTP</a>
+          {% if request.user.is_L1 %}
+        <a class="nav-link active" href="{% url 'gameEnbPage' %}">GameEnabling</a>
+          {% endif %}
+        <a class="nav-link" href="{% url 'infoPage' %}">dbInfo</a>
+          {% if request.user.is_L1 %}
+        <a class="nav-link" href="{% url 'rtpCloning' %}">rtpCloning</a>
+          {% endif %}
+    </div>
+
+    <div class="col-sm-2 col-md-2 col-lg-2 col d-flex justify-content-end align-items-center">
+      <!-- <div class="d-flex justify-content-end">some text or icon here</div> -->
+      <h3 class="masthead-brand">
+        <!-- {% if request.user.is_authenticated %} -->
+          <div class="dropdown d-flex align-items-center">
+            <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
+            {{request.user.username}}
+          </button>
+            <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="dropdownMenuButton2">
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault_theme">
+              <label class="form-check-label" for="flexSwitchCheckDefault">Theme switch</label>
+            </div>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+            </ul>
+          </div>
+          {% endif %}
+      </h3>
+
+    </div>
+  </div>
+</div>
+
+</nav>
+
+<!-- js for checkbox switch URL redirects and saving cookies for selected theme -->
+    <script type="text/javascript">
+      document.querySelector('#flexSwitchCheckDefault_theme').addEventListener('change', function(){
+       if(this.checked){
+         setTimeout(function(){window.location.href="/theme?color=dark"},250);
+        }
+        else{
+          setTimeout(function(){window.location.href="/theme?color=light"},250);
+        }  
+      });
+    </script>
+
+    <script>
+      function onClickBox() {
+        let checked=$("#flexSwitchCheckDefault_theme").is(":checked");
+        localStorage.setItem("checked", checked);
+        $("#msg").text("Checkbox is checked: "+$("#flexSwitchCheckDefault_theme").is(":checked") );
+      }
+      function onReady() {
+        $("#msg").text("Loaded.");
+        let checked="true"==localStorage.getItem("checked");
+        $("#flexSwitchCheckDefault_theme").prop('checked', checked);
+        $("#flexSwitchCheckDefault_theme").click(onClickBox);
+      }
+      $(document).ready(onReady);
+    </script>
+
+
+<div class="mx-2 py-4">
+  
+  Some text goes here.
+
+</div>
+
+</body>
+</html>
